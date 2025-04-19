@@ -64,30 +64,76 @@ http://localhost:8080/h2-console
 ```bash
 % curl localhost:8080/sql \
   -H"Content-type: application/json" \
-  -d'{"question":"How many orders do alice have?"}'
+  -d'{"question":"What are the files and file status of SystemA?"}'
 ```
 #### 示例响应:
-请帮我查询用户alice的所有订单
 ```json
 {
-  "sqlQuery": "select count(*) as order_count from Orders o join Users u on o.user_ref = u.id where u.username = 'alice';",
+  "sqlQuery": "select ft.file_name, ft.transfer_status \nfrom FileTransfers ft\njoin UpstreamSystems us on ft.upstream_system_id = us.id\nwhere us.name = 'SystemA'",
   "results": [
     {
-      "ORDER_COUNT": 2
+      "FILE_NAME": "data_20240101.csv",
+      "TRANSFER_STATUS": "COMPLETED"
+    },
+    {
+      "FILE_NAME": "data_20240102.csv",
+      "TRANSFER_STATUS": "FAILED"
+    },
+    {
+      "FILE_NAME": "data_20240108.csv",
+      "TRANSFER_STATUS": "PENDING"
+    },
+    {
+      "FILE_NAME": "data_20240113.csv",
+      "TRANSFER_STATUS": "IN_PROGRESS"
     }
   ]
 }
 ```
 ### 数据模型
 ```sql
--- 用户表
-Users (id, username, email)
+-- 上游系统表
+create table UpstreamSystems (
+    id int not null auto_increment,
+    name varchar(255) not null unique,
+    description varchar(255),
+    primary key (id)
+);
 
--- 商品表 
-Products (id, name, price, stock)
+-- 下游系统表
+create table DownstreamSystems (
+    id int not null auto_increment,
+    name varchar(255) not null unique,
+    description varchar(255),
+    primary key (id)
+);
 
--- 订单表
-Orders (id, user_ref, product_ref, quantity)
+-- SFTP 连接详情表
+create table ConnectionDetails (
+    id int not null auto_increment,
+    host varchar(255) not null,
+    port int not null,
+    username varchar(255) not null,
+    password varchar(255) not null,
+    primary key (id)
+);
+
+-- 文件传输记录表
+create table FileTransfers (
+    id int not null auto_increment,
+    file_name varchar(255) not null,
+    file_size bigint not null,
+    transfer_status varchar(50) not null, -- e.g., PENDING, IN_PROGRESS, COMPLETED, FAILED
+    transfer_date timestamp default current_timestamp,
+    upstream_system_id int not null,
+    downstream_system_id int not null,
+    connection_detail_id int not null,
+    error_message varchar(255),
+    primary key (id),
+    foreign key (upstream_system_id) references UpstreamSystems(id),
+    foreign key (downstream_system_id) references DownstreamSystems(id),
+    foreign key (connection_detail_id) references ConnectionDetails(id)
+);
 ```
 ### 配置说明
 #### 修改 application.yml 配置：
