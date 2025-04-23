@@ -1,0 +1,17 @@
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://api.githubcopilot.com
+      chat:
+        options:
+          model: gpt-4o
+        completions-path: /chat/completions
+      embedding:
+        options:
+          model: text-embedding-3-small
+        embeddings-path: /embeddings
+support:
+  rules:
+    file:
+      url: classpath:rules.md
