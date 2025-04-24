@@ -17,7 +17,7 @@ public class AiConfig {
 
   private static final Logger LOGGER = org.slf4j.LoggerFactory.getLogger(AiConfig.class);
 
-  @Value("${support.rules.file.url}")
+  @Value("${support.guidance.file.url}")
   private Resource rulebook;
 
   @Bean

@@ -12,6 +12,6 @@ spring:
           model: text-embedding-3-small
         embeddings-path: /embeddings
 support:
-  rules:
+  guidance:
     file:
-      url: classpath:rules.md
+      url: classpath:guidance.md
