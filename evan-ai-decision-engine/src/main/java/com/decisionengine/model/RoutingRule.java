@@ -34,6 +34,9 @@ public class RoutingRule {
     @Max(100)
     private Integer priority;
 
+    @Column(columnDefinition = "TEXT")
+    private String toolScript; // Groovy script for tool execution
+
     @NotNull
     private Boolean enabled;
 }

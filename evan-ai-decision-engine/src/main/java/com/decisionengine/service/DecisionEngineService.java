@@ -60,6 +60,6 @@ public class DecisionEngineService {
                 .filter(e -> e.getToolType().equals(rule.getToolType()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No executor found"))
-                .execute(userRequest, rule.getToolConfig());
+                .execute(userRequest, rule.getToolConfig(), rule.getToolScript());
     }
 }

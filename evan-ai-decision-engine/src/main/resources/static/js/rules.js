@@ -1,4 +1,4 @@
-// Helper to serialize form to JSON, handling checkbox
+// Helper to serialize form to JSON, handling checkbox and toolScript
 function getRuleFormData() {
     return {
         id: $("#ruleId").val() || null,
@@ -8,6 +8,7 @@ function getRuleFormData() {
         toolType: $("#ruleToolType").val(),
         toolConfig: $("#ruleToolConfig").val(),
         priority: parseInt($("#rulePriority").val(), 10),
+        toolScript: $("#ruleToolScript").val(), // <-- add this line
         enabled: $("#ruleEnabled").is(":checked")
     };
 }
@@ -17,6 +18,9 @@ function reloadRulesTable() {
         let tbody = $("#rulesTable tbody");
         tbody.empty();
         data.content.forEach(function(rule) {
+            let scriptBtn = rule.toolScript && rule.toolScript.trim().length > 0
+                ? `<button class="btn btn-sm btn-secondary" onclick="viewScript('${rule.id}')">View Script</button>`
+                : '';
             let row = `<tr>
                 <td>${rule.name}</td>
                 <td>${rule.condition}</td>
@@ -27,6 +31,7 @@ function reloadRulesTable() {
                 <td>
                     <button class="btn btn-sm btn-info" data-id="${rule.id}" onclick="editRule(this)">Edit</button>
                     <button class="btn btn-sm btn-danger" data-id="${rule.id}" onclick="deleteRule(this)">Delete</button>
+                    ${scriptBtn}
                 </td>
             </tr>`;
             tbody.append(row);
@@ -40,10 +45,11 @@ $('.btn-primary[data-bs-target="#ruleModal"]').on('click', function() {
     $("#ruleId").val('');
 });
 
-// editRule only fills the form and shows the modal
+
+// editRule fills the form and shows the modal, including toolScript
 function editRule(btn) {
     let id = $(btn).data("id");
-    $("#ruleModal").modal("show"); // Show modal first
+    $("#ruleModal").modal("show");
     $.get(`/api/rules/${id}`, function(rule) {
         $("#ruleId").val(rule.id);
         $("#ruleName").val(rule.name);
@@ -52,6 +58,7 @@ function editRule(btn) {
         $("#ruleToolType").val(rule.toolType);
         $("#ruleToolConfig").val(rule.toolConfig);
         $("#rulePriority").val(rule.priority);
+        $("#ruleToolScript").val(rule.toolScript || ""); // <-- add this line
         $("#ruleEnabled").prop("checked", rule.enabled);
     });
 }
@@ -102,3 +109,10 @@ $(function() {
         });
     });
 });
+
+function viewScript(ruleId) {
+    $.get(`/api/rules/${ruleId}`, function(rule) {
+        $("#scriptContent").text(rule.toolScript || "(No script)");
+        $("#scriptModal").modal("show");
+    });
+}

@@ -66,6 +66,11 @@
                         <input type="number" class="form-control" name="priority" id="rulePriority" min="1" max="100" required placeholder="e.g. 10">
                     </div>
                     <div class="mb-2">
+                        <label>Tool Script (Groovy)</label>
+                        <textarea class="form-control" name="toolScript" id="ruleToolScript" rows="6" placeholder="def call(request, config) { ... }"></textarea>
+                        <small class="form-text text-muted">Optional: Custom Groovy script for tool execution</small>
+                    </div>
+                    <div class="mb-2">
                         <label>Enabled</label>
                         <input type="checkbox" name="enabled" id="ruleEnabled">
                         <small class="form-text text-muted">Check to enable this rule</small>
@@ -77,6 +82,20 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<div class="modal fade" id="scriptModal" tabindex="-1" aria-labelledby="scriptModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scriptModalLabel">Tool Script</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <pre id="scriptContent" style="white-space: pre-wrap; word-break: break-all;"></pre>
+            </div>
+        </div>
     </div>
 </div>
 </body>
