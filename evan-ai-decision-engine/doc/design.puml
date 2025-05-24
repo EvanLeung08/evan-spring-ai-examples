@@ -1,0 +1,86 @@
+@startuml
+skinparam componentStyle uml2
+skinparam nodesep 10
+skinparam ranksep 20
+
+package "Access Layer" {
+  [API Gateway] <<Spring Boot>> #LightBlue
+  [REST Controller] <<Spring MVC>> #LightBlue
+}
+
+package "Routing Decision Layer" {
+  [Router Service] <<Spring Service>> #LightGreen
+  [Rule Engine] <<Drools>> #LightGreen
+  [Rules Cache] <<Redis>> #LightGreen
+}
+
+package "AI Processing Layer" {
+  [AI Service] <<Spring AI>> #Moccasin
+  [GPT-4] <<OpenAI>> #Moccasin
+}
+
+package "Tool Execution Layer" {
+  [MCP Tool1] <<Java Service>> #Lavender
+  [MCP Tool2] <<Java Service>> #Lavender
+  [Weather API] <<HTTP Client>> #Lavender
+  [Stock API] <<HTTP Client>> #Lavender
+}
+
+package "Configuration Management" {
+  [Rule Manager] <<Spring Data JPA>> #Thistle
+  [MySQL] <<Database>> #Thistle
+  [Config API] <<REST>> #Thistle
+}
+
+database "Monitoring System" {
+  [Prometheus] <<Metrics>>
+  [ELK Stack] <<Logging>>
+}
+
+[API Gateway] --> [REST Controller] : HTTP Request
+[REST Controller] --> [Router Service] : Route Request
+
+[Router Service] --> [Rule Engine] : Get Matching Rules
+[Router Service] --> [Rules Cache] : Read Cached Rules
+[Router Service] --> [AI Service] : AI Validation
+
+[Rule Engine] --> [Rule Manager] : Load Rule Configurations
+[Rule Manager] --> [MySQL] : CRUD Operations
+[Config API] --> [Rule Manager] : Manage Configurations
+
+[AI Service] --> [GPT-4] : API Call
+[AI Service] --> [Rules Cache] : Cache AI Decisions
+
+[Router Service] --> [MCP Tool1] : Execute Tool
+[Router Service] --> [Weather API] : Call External API
+[Router Service] --> [Stock API] : Call External API
+
+[MCP Tool1] --> [Prometheus] : Report Metrics
+[Weather API] --> [ELK Stack] : Log Records
+
+[Rule Manager] --> [Rules Cache] : Update Cache\n(Scheduled Refresh/Event-Driven)
+[Config API] --> [MySQL] : Configuration Management
+
+note right of [Rule Engine]
+  Matching Strategies:
+  1. Keyword Matching
+  2. Regex Matching
+  3. AI Model Prediction
+  Select optimal rule by priority
+end note
+
+note left of [AI Service]
+  GPT-4 Prompt Example:
+  "Analyze user request and suggest response tool
+  with confidence score. Format: {tool:...,confidence:0.95}"
+end note
+
+note bottom of [Router Service]
+  Execution Flow:
+  1. Request Preprocessing
+  2. Rule Matching
+  3. AI Verification (Optional)
+  4. Tool Execution
+  5. Result Postprocessing
+end note
+@enduml
