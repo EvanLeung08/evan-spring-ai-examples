@@ -45,8 +45,8 @@ public class RuleController {
         ruleRepo.deleteById(id);
     }
 
-    @PostMapping("/test")
-    public Object testRule(@RequestBody Map<String, String> req) {
+    @PostMapping("/execute")
+    public Object executeRule(@RequestBody Map<String, String> req) {
         String userRequest = req.get("request");
         return decisionEngineService.routeAndExecute(userRequest);
     }

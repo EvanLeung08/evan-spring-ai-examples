@@ -1,0 +1,24 @@
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://api.githubcopilot.com
+      chat:
+        options:
+          model: gpt-4o
+        completions-path: /chat/completions
+    mcp:
+      client:
+        enabled: true
+        name: my-mcp-client
+        version: 1.0.0
+        request-timeout: 30s
+        type: SYNC
+        sse:
+          connections:
+            server1:
+              url: http://localhost:8081
+            server2:
+              url: http://localhost:8999
+server:
+  port: 8082

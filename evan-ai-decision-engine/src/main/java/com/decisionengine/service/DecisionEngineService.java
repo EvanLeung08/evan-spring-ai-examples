@@ -41,11 +41,11 @@ public class DecisionEngineService {
                 .filter(r -> "AI".equals(r.getCondition()))
                 .toList();
         if (!aiRules.isEmpty()) {
-            List<String> tools = aiRules.stream().map(RoutingRule::getToolType).toList();
+            List<String> tools = aiRules.stream().map(RoutingRule::getName).toList();
             AIDecisionService.ToolDecision decision = aiDecisionService.makeDecision(userRequest, tools);
             if (decision.tool() != null) {
                 RoutingRule rule = aiRules.stream()
-                        .filter(r -> r.getToolType().equals(decision.tool()))
+                        .filter(r -> r.getName().equals(decision.tool()))
                         .findFirst().orElse(null);
                 if (rule != null) {
                     return executeTool(rule, userRequest);

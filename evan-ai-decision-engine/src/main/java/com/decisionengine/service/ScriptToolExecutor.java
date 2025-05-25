@@ -11,6 +11,9 @@ public class ScriptToolExecutor {
             Binding binding = new Binding();
             binding.setVariable("request", request);
             binding.setVariable("config", config);
+            // 绑定工具类
+            binding.setVariable("McpUtils", com.decisionengine.mcp.McpUtils.class);
+            binding.setVariable("McpConfig", com.decisionengine.mcp.McpConfig.class);
             GroovyShell shell = new GroovyShell(binding);
             Object scriptObj = shell.evaluate(script);
             Object result = scriptObj.getClass().getMethod("call", Object.class, Object.class)

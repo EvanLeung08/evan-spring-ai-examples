@@ -26,3 +26,7 @@ return { request, config ->
     def response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString())
     return response.body()
 }
+
+/**
+ * Example config:{   "endpoint": "https://dog.ceo/api/breeds/image/random",   "method": "GET",   "proxyHost": null,   "proxyPort": null,   "proxyUser": null,   "proxyPass": null }
+ */

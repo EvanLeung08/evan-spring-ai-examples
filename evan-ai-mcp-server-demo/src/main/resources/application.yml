@@ -1,0 +1,23 @@
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://api.githubcopilot.com
+      chat:
+        options:
+          model: gpt-4o
+        completions-path: /chat/completions
+#    mcp:
+#      server:
+#        name: example-mcp-server
+#        version: 1.0.0
+#        type: SYNC
+#        instructions: "This reactive server provides weather information tools and resources"
+#        sse-message-endpoint: /mcp/messages
+#        capabilities:
+#          tool: true
+#          resource: true
+#          prompt: true
+#          completion: true
+server:
+  port: 8081

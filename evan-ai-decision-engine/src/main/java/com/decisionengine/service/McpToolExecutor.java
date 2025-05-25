@@ -1,5 +1,6 @@
 package com.decisionengine.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class McpToolExecutor implements ToolExecutor {
             return scriptToolExecutor.executeScript(script, request, config);
         }
         // Default MCP logic (optional fallback)
+
         return "MCP executed with config: " + config + ", request: " + request;
     }
 }
