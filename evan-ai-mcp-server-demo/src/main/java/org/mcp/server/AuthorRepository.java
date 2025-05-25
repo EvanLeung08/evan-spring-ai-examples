@@ -6,16 +6,16 @@ import java.util.List;
 
 class AuthorRepository {
 
-    @Tool(description = "Get Baeldung author details using an article title")
+    @Tool(description = "Retrieve author details by article title")
     Author getAuthorByArticleTitle(String articleTitle) {
-        return new Author("John Doe", "john.doe@baeldung.com");
+        return new Author("Sample Author", "author@example.com");
     }
 
-    @Tool(description = "Get highest rated Baeldung authors")
+    @Tool(description = "Get a list of top sample authors")
     List<Author> getTopAuthors() {
         return List.of(
-            new Author("John Doe", "john.doe@baeldung.com"),
-            new Author("Jane Doe", "jane.doe@baeldung.com")
+                new Author("Sample Author", "author@example.com"),
+                new Author("Another Author", "another@example.com")
         );
     }
 
