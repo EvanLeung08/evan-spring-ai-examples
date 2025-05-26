@@ -5,7 +5,10 @@ import com.decisionengine.service.DecisionEngineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 import java.util.*;
 
@@ -49,5 +52,28 @@ public class RuleController {
     public Object executeRule(@RequestBody Map<String, String> req) {
         String userRequest = req.get("request");
         return decisionEngineService.routeAndExecute(userRequest);
+    }
+
+    @PostMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> chat(@RequestBody Map<String, String> req) {
+        String userRequest = req.get("request");
+        // 这里模拟流式响应，实际可根据AI/工具逐步推送内容
+        Sinks.Many<String> sink = Sinks.many().unicast().onBackpressureBuffer();
+        new Thread(() -> {
+            try {
+                Object result = decisionEngineService.routeAndExecute(userRequest);
+                String text = result == null ? "No response" : result.toString();
+                // 模拟逐字输出
+                for (int i = 1; i <= text.length(); i++) {
+                    sink.tryEmitNext(text.substring(0, i));
+                    Thread.sleep(30); // 打字效果
+                }
+                sink.tryEmitComplete();
+            } catch (Exception e) {
+                sink.tryEmitNext("Error: " + e.getMessage());
+                sink.tryEmitComplete();
+            }
+        }).start();
+        return sink.asFlux();
     }
 }

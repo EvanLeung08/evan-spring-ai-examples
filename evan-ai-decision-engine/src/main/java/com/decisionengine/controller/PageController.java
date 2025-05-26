@@ -16,4 +16,9 @@ public class PageController {
         model.addAttribute("rules", ruleRepo.findAll());
         return "rules";
     }
+
+    @GetMapping("/chat")
+    public String chatPage() {
+        return "chat";
+    }
 }
