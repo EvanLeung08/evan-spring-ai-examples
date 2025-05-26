@@ -2,7 +2,7 @@ import groovy.json.JsonSlurper
 
 // Load the script as a closure
 println new File(".").absolutePath
-def scriptText = new File('/Users/evan/Development/evan-spring-ai-examples/evan-ai-decision-engine/scripts/groovyScripts/generatePicture.groovy').text
+def scriptText = new File('/Users/evan/Development/evan-spring-ai-examples/evan-ai-decision-engine/scripts/groovyScripts/apiCallExample.groovy').text
 
 def closure = Eval.me(scriptText)
 
