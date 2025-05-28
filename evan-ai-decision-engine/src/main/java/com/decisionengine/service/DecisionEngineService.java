@@ -1,7 +1,7 @@
 package com.decisionengine.service;
 
-import com.decisionengine.model.RoutingRule;
-import com.decisionengine.model.RoutingRuleRepository;
+import com.decisionengine.model.*;
+import com.decisionengine.repository.WorkflowRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -13,8 +13,10 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class DecisionEngineService {
     private final RoutingRuleRepository ruleRepo;
+    private final WorkflowRepository workflowRepo;
     private final List<ToolExecutor> executors;
     private final AIDecisionService aiDecisionService;
+    private final WorkflowExecutionService workflowExecutionService;
 
     @Cacheable(value = "activeRules", unless = "#result == null", cacheManager = "cacheManager")
     public List<RoutingRule> getActiveRules() {
@@ -22,6 +24,16 @@ public class DecisionEngineService {
     }
 
     public Object routeAndExecute(String userRequest) {
+        // First check for workflow-specific keyword
+        if (userRequest.toLowerCase().contains("workflow")) {
+            List<Workflow> workflows = workflowRepo.findByEnabledTrue();
+            if (!workflows.isEmpty()) {
+                // For simplicity, use the first workflow or implement AI selection logic
+                return workflowExecutionService.executeWorkflow(workflows.get(0).getId(), userRequest);
+            }
+        }
+
+        // Fall back to existing rule-based routing
         List<RoutingRule> rules = getActiveRules();
         for (RoutingRule rule : rules) {
             if ("KEYWORD".equals(rule.getCondition())) {

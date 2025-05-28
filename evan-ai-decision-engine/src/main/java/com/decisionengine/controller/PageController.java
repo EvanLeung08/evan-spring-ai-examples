@@ -21,4 +21,9 @@ public class PageController {
     public String chatPage() {
         return "chat";
     }
+
+    @GetMapping("/workflows")
+    public String workflowsPage() {
+        return "workflows";
+    }
 }

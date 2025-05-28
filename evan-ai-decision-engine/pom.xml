@@ -193,11 +193,11 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
-        <dependency>
+    <!--    <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
-        </dependency>
+        </dependency>-->
         <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -305,6 +305,8 @@
             <artifactId>httpcore5-reactive</artifactId>
             <version>5.3.2</version>
         </dependency>-->
+
+
     </dependencies>
 
     <build>
