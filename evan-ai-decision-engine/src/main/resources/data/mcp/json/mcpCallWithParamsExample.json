@@ -1,0 +1,1 @@
+{   "transportType": "sse",   "serverUrl": "http://localhost:8999",   "tool": "executeBasicTool" }

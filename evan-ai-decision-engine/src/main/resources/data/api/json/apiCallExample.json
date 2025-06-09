@@ -1,0 +1,8 @@
+{
+    "endpoint": "https://dog.ceo/api/breeds/image/random",
+    "method": "GET",
+    "proxyHost": null,
+    "proxyPort": null,
+    "proxyUser": null,
+    "proxyPass": null
+ }

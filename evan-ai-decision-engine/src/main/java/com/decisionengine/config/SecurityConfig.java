@@ -18,7 +18,9 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/h2-console/**",
-                                "/api/**" // Allow unauthenticated access to test API
+                                "/api/**", // Allow unauthenticated access to test API
+                                "/api/workflows/**",
+                                "/api/workflows/*/execute"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .formLogin(form -> form
@@ -26,7 +28,7 @@ public class SecurityConfig {
                 )
                 .logout(withDefaults())
                 .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/**"));
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/h2-console/**", "/api/**", "/api/workflows/**"));
         return http.build();
     }
 }

@@ -1,9 +1,9 @@
 import groovy.json.JsonSlurper
+import groovy.json.JsonOutput
 
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient
 import org.apache.hc.client5.http.impl.classic.HttpClients
-import org.apache.hc.client5.http.classic.methods.HttpGet
-import org.apache.hc.client5.http.classic.methods.HttpPost
+import org.apache.hc.client5.http.classic.methods.*
 import org.apache.hc.core5.http.io.entity.StringEntity
 import org.apache.hc.core5.http.HttpHost
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials
@@ -41,14 +41,45 @@ def closure= { request, config ->
     def responseText = null
     try {
         def httpReq
-        if (method == "POST") {
-            httpReq = new HttpPost(uri)
-            httpReq.setHeader("Content-Type", "application/json")
-            httpReq.setEntity(new StringEntity(request?.toString() ?: ""))
-        } else {
-            httpReq = new HttpGet(uri)
-            httpReq.setHeader("Content-Type", "application/json")
+
+        // Create appropriate HTTP request based on method
+        switch (method) {
+            case "POST":
+                httpReq = new HttpPost(uri)
+                break
+            case "PUT":
+                httpReq = new HttpPut(uri)
+                break
+            case "DELETE":
+                httpReq = new HttpDelete(uri)
+                break
+            case "PATCH":
+                httpReq = new HttpPatch(uri)
+                break
+            case "HEAD":
+                httpReq = new HttpHead(uri)
+                break
+            case "OPTIONS":
+                httpReq = new HttpOptions(uri)
+                break
+            default: // GET as default
+                httpReq = new HttpGet(uri)
         }
+
+        // Set common headers
+        httpReq.setHeader("Content-Type", "application/json")
+
+        // Add request body for methods that support it
+        if (method in ["POST", "PUT", "PATCH"]) {
+            // Create a Map with format {"request": value}
+            def requestMap = [request: request]
+
+            // Convert the Map to JSON string
+            def requestBody = JsonOutput.toJson(requestMap)
+
+            httpReq.setEntity(new StringEntity(requestBody))
+        }
+
         def response = client.execute(httpReq)
         responseText = response.entity?.content?.getText("UTF-8")
         response.close()
@@ -61,8 +92,8 @@ def closure= { request, config ->
 /**
  * Example config:
  * {
- *   "endpoint": "https://dog.ceo/api/breeds/image/random",
- *   "method": "GET",
+ *   "endpoint": "https://api.example.com/resource",
+ *   "method": "POST", // Supports GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS
  *   "proxyHost": null,
  *   "proxyPort": null,
  *   "proxyUser": null,

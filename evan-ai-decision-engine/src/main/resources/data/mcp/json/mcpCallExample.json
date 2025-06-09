@@ -1,0 +1,1 @@
+{   "transportType": "sse",   "serverUrl": "http://localhost:8081",   "tool": "getTopAuthors" }

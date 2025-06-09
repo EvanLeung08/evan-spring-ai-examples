@@ -165,7 +165,79 @@ function renderWorkflowDiagram() {
     }
 }
 
-// Add new node
+// Add these functions to workflow.js
+
+// Load template lists based on tool type
+function loadTemplateOptions(toolType) {
+    // Load JSON templates
+    $.get(`/api/templates/${toolType.toLowerCase()}/json`, function(templates) {
+        const configSelector = $('#configTemplateSelector');
+        configSelector.empty();
+        configSelector.append('<option value="">Select a template</option>');
+
+        templates.forEach(template => {
+            configSelector.append(`<option value="${template}">${template}</option>`);
+        });
+    });
+
+    // Load Groovy templates
+    $.get(`/api/templates/${toolType.toLowerCase()}/groovy`, function(templates) {
+        const scriptSelector = $('#scriptTemplateSelector');
+        scriptSelector.empty();
+        scriptSelector.append('<option value="">Select a template</option>');
+
+        templates.forEach(template => {
+            scriptSelector.append(`<option value="${template}">${template}</option>`);
+        });
+    });
+}
+
+// Load template content when selected
+function initTemplateSelectors() {
+    // Config template selector
+    $('#configTemplateSelector').on('change', function() {
+        const filename = $(this).val();
+        if (!filename) return;
+
+        const toolType = $('#nodeToolType').val().toLowerCase();
+        $.get(`/api/templates/${toolType}/json/${filename}`, function(content) {
+            if (configEditor) {
+                configEditor.setValue(content);
+                configEditor.refresh();
+                autoResize(configEditor);
+            } else {
+                $('#nodeToolConfig').val(content);
+            }
+        });
+    });
+
+    // Script template selector
+    $('#scriptTemplateSelector').on('change', function() {
+        const filename = $(this).val();
+        if (!filename) return;
+
+        const toolType = $('#nodeToolType').val().toLowerCase();
+        $.get(`/api/templates/${toolType}/groovy/${filename}`, function(content) {
+            if (scriptEditor) {
+                scriptEditor.setValue(content);
+                scriptEditor.refresh();
+                autoResize(scriptEditor);
+            } else {
+                $('#nodeToolScript').val(content);
+            }
+        });
+    });
+
+    // Update templates when tool type changes
+    $('#nodeToolType').on('change', function() {
+        loadTemplateOptions($(this).val());
+    });
+}
+
+
+
+// Add new node with template loading
+// Fix the addNode function to properly show the modal
 function addNode() {
     if (!currentWorkflow) {
         alert('Please create or select a workflow first');
@@ -179,16 +251,24 @@ function addNode() {
     $('#nodePosition').val(newPosition);
     $('#nodeToolType').val('API');
 
+    initCodeMirrorEditors();
+
     if (configEditor) configEditor.setValue('{\n  "endpoint": "https://api.example.com",\n  "method": "GET"\n}');
     else $('#nodeToolConfig').val('{\n  "endpoint": "https://api.example.com",\n  "method": "GET"\n}');
 
     if (scriptEditor) scriptEditor.setValue('');
     else $('#nodeToolScript').val('');
 
-    $('#nodeEditor').show();
+    // Load template options for API (default)
+    loadTemplateOptions('API');
+
+    // Show the modal using Bootstrap's method
+    $('#nodeEditor').modal('show');
+
+
 }
 
-// Edit existing node
+// Fix the editNode function to use the same modal method
 function editNode(node) {
     $('#nodeId').val(node.id);
     $('#nodeName').val(node.name);
@@ -203,7 +283,11 @@ function editNode(node) {
     if (scriptEditor) scriptEditor.setValue(node.toolScript || '');
     else $('#nodeToolScript').val(node.toolScript || '');
 
-    $('#nodeEditor').show();
+    // Load template options for the node's tool type
+    loadTemplateOptions(node.toolType);
+
+    // Use Bootstrap's modal show method
+    $('#nodeEditor').modal('show');
 }
 
 // Initialize CodeMirror editors
@@ -245,6 +329,8 @@ function initCodeMirrorEditors() {
         }
     }, 100);
 }
+
+
 
 // Auto-resize CodeMirror to fit content
 function autoResize(cm) {
@@ -305,7 +391,8 @@ function saveNode(e) {
                     nodes[index] = updatedNode;
                 }
                 renderWorkflowDiagram();
-                $('#nodeEditor').hide();
+                // In the success callbacks, use:
+                   $('#nodeEditor').modal('hide');
             },
             error: function(xhr) {
                 alert('Save failed: ' + xhr.responseText);
@@ -322,7 +409,8 @@ function saveNode(e) {
             success: function(newNode) {
                 nodes.push(newNode);
                 renderWorkflowDiagram();
-                $('#nodeEditor').hide();
+                 // In the success callbacks, use:
+                    $('#nodeEditor').modal('hide');
             },
             error: function(xhr) {
                 console.error('Error response:', xhr.responseText);
@@ -344,7 +432,8 @@ function deleteNode() {
             success: function() {
                 nodes = nodes.filter(n => n.id != nodeId);
                 renderWorkflowDiagram();
-                $('#nodeEditor').hide();
+                // In the success callback, use:
+                    $('#nodeEditor').modal('hide');
             }
         });
     }
@@ -443,6 +532,9 @@ function formatNodeConfig() {
     }
 }
 
+
+
+
 // Initialize page
 $(function() {
        // Check if JointJS is properly loaded before initialization
@@ -450,7 +542,8 @@ $(function() {
            console.error('JointJS library not loaded');
            return;
        }
-
+  // Initialize template selectors
+    initTemplateSelectors();
        // Initialize JointJS diagram
        initWorkflowDiagram();
 
@@ -479,7 +572,8 @@ $('#createWorkflowBtn').click(function() {
     $('#nodeForm').submit(saveNode);
     $('#deleteNodeBtn').click(deleteNode);
     $('#cancelNodeBtn').click(function() {
-        $('#nodeEditor').hide();
+        // In the success callback, use:
+            $('#nodeEditor').modal('hide');
     });
     $('#runTestBtn').click(runTest);
 
